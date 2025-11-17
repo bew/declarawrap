@@ -1,0 +1,19 @@
+[package]
+name = "declarawrap"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "^1"
+
+kdl = "^6.5"
+
+# KDL (https://kdl.dev/) lib with serde-'like' derive macros
+# (note: Will eventually be replaced by facet-kdl)
+# knus = "^3"
+# knus = { git = "https://github.com/TheLostLambda/knus", branch = "kdl-v2" }
+# NOTE: Need v2 complience, not released yet (@2025-11)
+# SEE: https://github.com/TheLostLambda/knus/pull/21
+#
+# /!\ /!\ /!\ Multiline strings are NOT v2 complient
+# OPENED: https://github.com/TheLostLambda/knus/issues/16#issuecomment-3539896215

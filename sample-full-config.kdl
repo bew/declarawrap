@@ -1,0 +1,58 @@
+#!/path/to/my-wrapper-system
+
+// NOTE: action blocks in this scope will be applied in order
+
+env {
+  // NOTE: action blocks in this scope will be applied in order
+
+  // clear // Clear env before
+
+  prepend "PATH" { // `append` or `prepend-all` | `append-all` (with `values` instead of `value`)
+    sep ":"
+    value "new/path/bin"
+    // Behavior when the value is already present in the env var (not unique)
+    if-present "keep" // "remove" | "error" | "skip"
+  }
+
+  set "ZSH_CONFIG_DIR" {
+    // comment "Necessary for my own zsh config system" // FIXME: WHY allow a 'comment' node?
+    value "/path/to/zdotdir"
+    // Behavior when the env var is already set
+    if-set "replace" // "error" | "skip" (same as setting a default)
+  }
+  set "FOO" {
+    eval "env-vars"
+    value "some-dir:$ZSH_CONFIG_DIR"
+  }
+
+  unset "HOME"
+}
+
+// NOTE: When the command is not specified, the first arg will be used as the binary name/path
+command "/path/to/wrapped-bin"
+
+init-script {
+  interpreter "/path/to/bash"
+  content ##"""
+    important_dir="/tmp/foo"
+    if [[ -d "$important_dir" ]]; then
+      mkdir -p "$important_dir"
+    fi
+    """##
+}
+
+chdir "/tmp"
+
+arg0 replace "custom-bin"
+// or `inherit`(use wrapper's arg0)
+
+args {
+  prepend "foo" "bar"
+  // note: args here are added _after_ args in previous line
+  prepend "--foo" "--bar=value"
+  append "hello"
+  append transform="word_split" "foo bar baz" // (?)
+  // FIXME: How to define an arg that should be read from a file?
+  // FIXME: How to have a wrapper that edits the given args before forwarding them to the
+  //   wrapped command.
+}

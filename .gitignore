@@ -1,0 +1,11 @@
+# direnv
+# (ignored since it's highly specific to the host's dev env)
+.envrc
+
+# Rust
+target/
+
+
+# Added by cargo
+
+/target
