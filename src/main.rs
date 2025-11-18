@@ -1,4 +1,7 @@
+#![expect(dead_code)]
+
 mod config;
+mod kdl_config_parser;
 
 use std::path::Path;
 
@@ -44,7 +47,7 @@ fn main() -> anyhow::Result<()> {
         println!("ERROR: Config file {config_file} does not exist!");
     }
 
-    let config_content = std::fs::read_to_string(config_path).unwrap();
+    let _config_content = std::fs::read_to_string(config_path).unwrap();
     // let body = hcl::parse(&config_content).unwrap();
     // println!("Config HCL body: {body:#?}");
 

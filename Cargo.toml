@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = "^1"
+miette = "^7.6"
 
 kdl = "^6.5"
 

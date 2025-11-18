@@ -37,16 +37,10 @@ pub struct ArgsSequenceUpdate {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-struct CmdInitScript {
-    #[knus(child, unwrap(argument))]
-    interpreter: String,
-    #[knus(child, unwrap(argument))]
-    content: String,
-}
-
-#[derive(Debug, PartialEq, Eq)]
-enum CmdOperation {
-    Chdir(#[knus(argument)] String),
-    // NOTE: `doesn't support inline struct enum variant, need separate struct.
-    InitScript(CmdInitScript),
+pub enum CmdOperation {
+    Chdir(String),
+    InitScript {
+        interpreter: String,
+        content: String,
+    },
 }
