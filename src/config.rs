@@ -1,17 +1,27 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct BinWrapperConfig {
-    env_operations: Vec<EnvOperation>,
-    // wrapped: WrappedCmdConfig,
+    pub command: String,
+    pub env_operations: Vec<EnvOperation>,
+    pub cmd_operations: Vec<CmdOperation>,
+    pub args_operations: Vec<ArgsSequenceUpdate>
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct WrappedCmdConfig {
-    command: String,
-    cmd_operations: Vec<CmdOperation>,
-    args_operations: Vec<ArgsSequenceUpdate>
+#[derive(Debug, PartialEq, Eq, Default)]
+pub enum EnvIfSetBehavior {
+    #[default]
+    Replace,
+    Error,
+    Skip,
 }
 
-
+#[derive(Debug, PartialEq, Eq, Default)]
+pub enum EnvIfPresentBehavior {
+    #[default]
+    Keep,
+    Remove,
+    Error,
+    Skip,
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum EnvOperation {
@@ -19,21 +29,27 @@ pub enum EnvOperation {
     Set {
         var_name: String,
         value: String,
-        if_set: String, // MAYBE: use enum?
+        if_set: EnvIfSetBehavior,
     },
     Unset { var_name: String },
     // note: for `append` / `prepend`
     SequenceUpdate {
         sep: String,
         value: String,
-        if_present: String, // MAYBE: use enum?
+        if_present: EnvIfPresentBehavior
     },
+}
+
+#[derive(Debug, PartialEq, Eq, Default)]
+pub enum ArgsTransformation {
+    #[default]
+    WordSplit,
 }
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct ArgsSequenceUpdate {
-    items: Vec<String>,
-    transform: Option<String>, // MAYBE: use enum?
+    pub items: Vec<String>,
+    pub transform: Option<ArgsTransformation>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
