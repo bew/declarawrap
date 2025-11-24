@@ -3,7 +3,7 @@ pub struct BinWrapperConfig {
     pub command: String,
     pub env_operations: Vec<EnvOperation>,
     pub cmd_operations: Vec<CmdOperation>,
-    pub args_operations: Vec<ArgsSequenceUpdate>
+    pub args_operations: Vec<ArgsOperation>,
 }
 
 #[derive(Debug, PartialEq, Eq, Default)]
@@ -40,16 +40,21 @@ pub enum EnvOperation {
     },
 }
 
-#[derive(Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ArgsTransformation {
-    #[default]
     WordSplit,
 }
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct ArgsSequenceUpdate {
-    pub items: Vec<String>,
-    pub transform: Option<ArgsTransformation>,
+    pub arg_strings: Vec<String>,
+    pub transformation: Option<ArgsTransformation>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum ArgsOperation {
+    Append(ArgsSequenceUpdate),
+    Prepend(ArgsSequenceUpdate),
 }
 
 #[derive(Debug, PartialEq, Eq)]

@@ -51,7 +51,7 @@ args {
   // note: args here are added _after_ args in previous line
   prepend "--foo" "--bar=value"
   append "hello"
-  append transform="word_split" "foo bar baz" // (?)
+  append transform="word-split" "foo bar baz" // (?)
   // FIXME: How to define an arg that should be read from a file?
   // FIXME: How to have a wrapper that edits the given args before forwarding them to the
   //   wrapped command.
