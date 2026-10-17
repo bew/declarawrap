@@ -4,11 +4,7 @@ use anyhow::anyhow;
 use kdl::{KdlDocument, KdlEntry, KdlNode};
 
 use crate::config::{
-    ArgsOperation,
-    ArgsSequenceUpdate,
-    ArgsTransformation,
-    BinWrapperConfig,
-    CmdOperation,
+    Arg0Behavior, ArgsOperation, ArgsSequenceUpdate, ArgsTransformation, BinWrapperConfig, CmdOperation, EnvOperation
 };
 
 fn check_no_args(node: &KdlNode, directive: &str) -> anyhow::Result<()> {
@@ -45,7 +41,7 @@ fn get_single_arg_string<'a>(node: &'a KdlNode, directive: &str) -> anyhow::Resu
 
 fn check_arg_is_positional(arg: &KdlEntry, directive: &str) -> anyhow::Result<()> {
     if let Some(prop_name) = arg.name() {
-        return Err(anyhow!("{directive}: Node arg expected to be positional, got property {prop_name}"))
+        return Err(anyhow!("{directive}: Node arg expected to be positional, got property {prop_name:?}"))
     }
     Ok(())
 }
@@ -125,7 +121,26 @@ impl TryFrom<KdlNode> for ArgsOperation {
             }
             directive => {
                 let type_name = std::any::type_name::<Self>();
-                Err(anyhow!("Unhandled directive '{directive}' for {ty}", ty=type_name))?
+                Err(anyhow!("args: Unhandled directive {directive:?} for {ty}", ty=type_name))?
+            }
+        };
+        Ok(op)
+    }
+}
+
+impl TryFrom<KdlNode> for EnvOperation {
+    type Error = anyhow::Error;
+
+    fn try_from(node: KdlNode) -> Result<Self, Self::Error> {
+        let op = match node.name().value() {
+            "clear" => todo!(),
+            "set" => todo!(),
+            "unset" => todo!(),
+            "append" => todo!(),
+            "prepend" => todo!(),
+            directive => {
+                let type_name = std::any::type_name::<Self>();
+                Err(anyhow!("env: Unhandled directive {directive:?} for {ty}", ty=type_name))?
             }
         };
         Ok(op)
@@ -175,9 +190,17 @@ impl TryFrom<KdlDocument> for BinWrapperConfig {
                         args_operations.push(op);
                     }
                 }
+                "env" => {
+                    check_no_args(&node, "env")?;
+                    let inner_doc = get_inner_doc(node, "env")?;
+                    for child_node in inner_doc.nodes() {
+                        let op = EnvOperation::try_from(child_node.clone())?;
+                        env_operations.push(op);
+                    }
+                }
                 directive => {
                     // TODO: test error cases!
-                    Err(anyhow!("Unknown directive '{directive}' 👀"))?;
+                    Err(anyhow!("Unknown directive {directive:?} 👀"))?;
                 }
             }
         }
@@ -188,6 +211,7 @@ impl TryFrom<KdlDocument> for BinWrapperConfig {
 
         Ok(BinWrapperConfig {
             command: command.into(),
+            arg0_behavior: Arg0Behavior::Inherit,
             env_operations,
             cmd_operations,
             args_operations,

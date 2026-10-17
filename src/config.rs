@@ -1,26 +1,33 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct BinWrapperConfig {
     pub command: String,
+    pub arg0_behavior: Arg0Behavior,
     pub env_operations: Vec<EnvOperation>,
     pub cmd_operations: Vec<CmdOperation>,
     pub args_operations: Vec<ArgsOperation>,
 }
 
-#[derive(Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum EnvIfSetBehavior {
-    #[default]
     Replace,
     Error,
     Skip,
 }
 
-#[derive(Debug, PartialEq, Eq, Default)]
-pub enum EnvIfPresentBehavior {
-    #[default]
+#[derive(Debug, PartialEq, Eq)]
+pub enum EnvIfInSequenceBehavior {
     Keep,
     Remove,
     Error,
     Skip,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct EnvSequenceUpdate {
+    pub var_name: String,
+    pub sep: String,
+    pub value: String,
+    pub if_present: EnvIfInSequenceBehavior,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -32,11 +39,13 @@ pub enum EnvOperation {
         if_set: EnvIfSetBehavior,
     },
     Unset { var_name: String },
-    // note: for `append` / `prepend`
-    SequenceUpdate {
+    Append(EnvSequenceUpdate),
+    Prepend(EnvSequenceUpdate),
+    // remove from sequence (?)
+    Remove {
+        var_name: String,
         sep: String,
         value: String,
-        if_present: EnvIfPresentBehavior
     },
 }
 
@@ -55,6 +64,12 @@ pub struct ArgsSequenceUpdate {
 pub enum ArgsOperation {
     Append(ArgsSequenceUpdate),
     Prepend(ArgsSequenceUpdate),
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum Arg0Behavior {
+    Inherit,
+    Replace(String),
 }
 
 #[derive(Debug, PartialEq, Eq)]

@@ -20,7 +20,6 @@ In Nix, we can build wrappers of another binary using these 2 helpers:
   - Hard to generate the wrapper (very error-prone)
   - Cannot be introspected after the build (other than using a non-trivial `strings` invocation to
     extract the initial cli actions given to generate the wrapper)
-  - Good execution speed.
 
 These solutions do not fullfill my need to fast & easily-introspectable wrapper needs.
 
