@@ -40,7 +40,7 @@ On Nix side we can have a nice _lib_ to generate this config.
 
 See [Full Sample Config][sample-full-config].
 
-[sample-full-config]: ./sample-full-config.kdl
+[sample-full-config]: ./sample-configs/full-config.kdl
 
 
 ### Why not HCL for the language?

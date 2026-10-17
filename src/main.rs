@@ -1,3 +1,6 @@
+// declarawrap — declarative binary wrapper.
+// Reads a KDL config file and execs the wrapped command with its overrides applied.
+
 #![expect(dead_code)]
 
 mod config;
@@ -5,18 +8,25 @@ mod kdl_config_parser;
 
 use std::path::Path;
 
+use anyhow::Context;
+
+/// CLI program name, used in usage and error messages.
 static PROGRAM_NAME: &str = "declarawrap";
 
+/// Print the usage line to stderr.
 fn show_usage() {
-    // println!("Usage: declarawrap <config-file> [<bin> [<args>...]]");
-    println!("Usage: {PROGRAM_NAME} <config-file>");
+    eprintln!("Usage: {PROGRAM_NAME} <config-file>");
 }
 
 #[derive(Debug)]
 struct CliOptions {
-  pub config_file: String,
+    config_file: String,
 }
 
+/// Parse CLI arguments into [`CliOptions`].
+///
+/// Only the config file is accepted; any further arguments are noted as ignored.
+/// Returns an error when the config file argument is missing.
 fn parse_args() -> Result<CliOptions, String> {
     let mut given_args = std::env::args();
     given_args.next(); // skip program name/path
@@ -32,27 +42,23 @@ fn parse_args() -> Result<CliOptions, String> {
     Ok(CliOptions { config_file })
 }
 
+/// Entry point: parse args, load the config file, then hand off to the wrapper runtime.
 fn main() -> anyhow::Result<()> {
     let config_file = match parse_args() {
         Ok(opts) => opts.config_file,
         Err(err) => {
-            eprintln!("ERROR: {err}");
             show_usage();
-            return Ok(())
+            anyhow::bail!("{err}");
         }
     };
 
     let config_path = Path::new(&config_file);
     if !config_path.exists() {
-        println!("ERROR: Config file {config_file} does not exist!");
+        anyhow::bail!("config file '{config_file}' does not exist");
     }
 
-    let _config_content = std::fs::read_to_string(config_path).unwrap();
-    // let body = hcl::parse(&config_content).unwrap();
-    // println!("Config HCL body: {body:#?}");
-
-    // let config: config::BinWrapperConfig = hcl::de::from_str(&config_content)?;
-    // println!("Config: {config:#?}");
+    let _config_content = std::fs::read_to_string(config_path)
+        .with_context(|| format!("failed to read config file '{config_file}'"))?;
 
     Ok(())
 }
