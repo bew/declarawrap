@@ -1,24 +1,26 @@
 # Declarawrap - Declarative binary wrapper
 
+> [!WARNING]
+> This project is not ready yet, the design of the declarative wrapper is still in flux.
 
 In Nix, we can build wrappers of another binary using these 2 helpers:
 
-- `makeWrapper` will take actions via cli & generate a _shell script_ that will apply all changes to
+- `makeWrapper` take actions via cli & generate a _shell script_ that will apply all changes to
   the env/flags/args (through particulary ugly & unreadable shell tricks to avoid escaping issues..)
   before calling the original executable.
 
   Why I don't like this solution:
-  - Medium-hard to generate the wrapper (to make sure there's no escaping issues..)
-  - Can be introspected after the build (but generated shell script isn't very readable..)
-  - Not great to execute with the overhead of the shell and its (ugly) env/flags/args
+  * Medium-hard to generate the wrapper (to make sure there's no escaping issues..)
+  * Can be introspected after the build (but generated shell script isn't very readable..)
+  * Not great to execute with the overhead of the shell and its (ugly) env/flags/args
     initialization/sanitization.
 
-- `makeBinaryWrapper` will take actions via cli & generate a C program to do the same thing as
+- `makeBinaryWrapper` take actions via cli & generate a C program to do the same thing as
   `makeWrapper`.
 
   Why I don't like this solution:
-  - Hard to generate the wrapper (very error-prone)
-  - Cannot be introspected after the build (other than using a non-trivial `strings` invocation to
+  * Hard to generate the wrapper (very error-prone)
+  * Cannot be introspected after the build (other than using a non-trivial `strings` invocation to
     extract the initial cli actions given to generate the wrapper)
 
 These solutions do not fullfill my need to fast & easily-introspectable wrapper needs.
