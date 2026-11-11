@@ -1,7 +1,13 @@
 command "echo"
 
-args {
-  prepend "[SURROUNDED]:"
-  append "AFTER"
-  prepend "BEFORE"
+args:prepend {
+  - "[SURROUNDED]:"
+}
+
+args:append {
+  - "AFTER"
+}
+
+args:prepend {
+  - "BEFORE"
 }

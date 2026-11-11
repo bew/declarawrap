@@ -37,11 +37,15 @@ pub struct InitScriptDirective {
     pub content: String,
 }
 
-/// The `env set` directive.
+/// The `env:set` directive.
+///
+/// `sep` joins the values when there is more than one; it is `None` for the
+/// common single-value case, where no separator is involved.
 #[derive(Debug, PartialEq, Eq)]
 pub struct EnvSetDirective {
     pub var_name: String,
-    pub value: String,
+    pub sep: Option<String>,
+    pub values: Vec<ValueEntry>,
     pub if_set: EnvIfSetBehavior,
 }
 
@@ -55,7 +59,7 @@ pub struct EnvUnsetDirective {
 #[derive(Debug, PartialEq, Eq)]
 pub struct EnvClearDirective;
 
-/// An `env prepend`/`env append` directive.
+/// An `env:prepend`/`env:append` directive.
 ///
 /// `D` is a direction marker (`Prepend` or `Append`): the two directions carry
 /// identical data, so the direction is encoded in the type rather than a field.
@@ -63,19 +67,28 @@ pub struct EnvClearDirective;
 pub struct EnvSequenceUpdate<D> {
     pub var_name: String,
     pub sep: String,
-    pub value: String,
+    pub values: Vec<ValueEntry>,
     pub if_present: EnvIfInSequenceBehavior,
     pub(crate) _direction: PhantomData<D>,
 }
 
-/// An `args prepend`/`args append` directive.
+/// An `args:prepend`/`args:append` directive.
 ///
 /// `D` is a direction marker (`Prepend` or `Append`).
 #[derive(Debug, PartialEq, Eq)]
 pub struct ArgsSequenceUpdate<D> {
-    pub arg_strings: Vec<String>,
-    pub transformation: Option<ArgsTransformation>,
+    pub values: Vec<ValueEntry>,
     pub(crate) _direction: PhantomData<D>,
+}
+
+/// A value together with the transformations the runtime applies to it.
+///
+/// Transformations are already resolved against any per-op default, so this
+/// list is applied as-is, in order.
+#[derive(Debug, PartialEq, Eq)]
+pub struct ValueEntry {
+    pub text: String,
+    pub transforms: Vec<ValueTransformation>,
 }
 
 // -------------------------------------------------------
@@ -136,10 +149,13 @@ pub enum EnvIfInSequenceBehavior {
     Skip,
 }
 
-/// A transformation applied to argument strings.
-#[derive(Debug, PartialEq, Eq)]
-pub enum ArgsTransformation {
+/// A transformation applied to a value string.
+///
+/// The same set is valid for both env and args values.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ValueTransformation {
     WordSplit,
+    ExpandEnv,
 }
 
 /// How the wrapped command's `argv[0]` is set.
