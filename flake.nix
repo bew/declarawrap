@@ -6,6 +6,8 @@
     devshell.url = "github:numtide/devshell";
 
     naersk.url = "github:nmattia/naersk";
+
+    kit-system.url = "github:bew/nix-kit-system";
   };
 
   outputs = inputs@{ systems, flake-parts, ... }: (

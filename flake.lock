@@ -58,6 +58,21 @@
         "type": "github"
       }
     },
+    "kit-system": {
+      "locked": {
+        "lastModified": 1794453795,
+        "narHash": "sha256-1SFOnJ/ashvetGsL42jr2n4a81AhrmnfxKoJyb2ZTKU=",
+        "owner": "bew",
+        "repo": "nix-kit-system",
+        "rev": "dd5ab63a6cbf9d4940d16d2e1f6fd9a21b2343f1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bew",
+        "repo": "nix-kit-system",
+        "type": "github"
+      }
+    },
     "naersk": {
       "inputs": {
         "fenix": "fenix",
@@ -144,6 +159,7 @@
       "inputs": {
         "devshell": "devshell",
         "flake-parts": "flake-parts",
+        "kit-system": "kit-system",
         "naersk": "naersk",
         "nixpkgs": "nixpkgs_3",
         "systems": "systems"
